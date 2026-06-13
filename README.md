@@ -1,0 +1,1 @@
+NeuroRescue is a disaster-response robot designed for the neuromorphic rescue of earthquake-hit urban areas. It moves through debris and unsafe terrain, detects trapped survivors and identifies the quickest safe path to rescuing them. NeuroRescue uses all sensor data in real-time and adapts to new things occurring around with various AI techniques.
