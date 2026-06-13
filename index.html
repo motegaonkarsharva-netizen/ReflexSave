@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReflexSave — NeuroRescue Mission Control</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Rajdhani:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="scanlines"></div>
+  <div class="bg-grid"></div>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <div class="logo-mark">
+        <span class="logo-ring"></span>
+        <span class="logo-core">NR</span>
+      </div>
+      <div class="header-titles">
+        <h1>NeuroRescue Mission Control</h1>
+        <p class="subtitle">Earthquake Response Simulation – India</p>
+      </div>
+    </div>
+    <div class="header-center">
+      <div class="alert-banner" id="alertBanner">
+        <span class="alert-icon">⚠</span>
+        <span class="alert-text" id="alertText">All systems nominal — monitoring active</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="clock-block">
+        <span class="clock-label">LOCAL TIME</span>
+        <span class="clock-value" id="liveClock">--:--:--</span>
+      </div>
+      <div class="clock-block">
+        <span class="clock-label">MISSION TIMER</span>
+        <span class="clock-value mission-timer" id="missionTimer">00:00:00</span>
+      </div>
+      <div class="status-pill live">
+        <span class="pulse-dot"></span>
+        LIVE
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Grid -->
+  <main class="dashboard">
+    <!-- Panel 1: 2D Simulation Map -->
+    <section class="panel panel-map glass">
+      <div class="panel-header">
+        <h2>2D Earthquake Simulation Map</h2>
+        <div class="panel-meta">
+          <span class="meta-tag">Grid: 56×42</span>
+          <span class="meta-tag accent-cyan">ReflexSave v1.0</span>
+        </div>
+      </div>
+      <div class="map-container">
+        <canvas id="simCanvas"></canvas>
+        <div class="map-legend">
+          <div class="legend-section">
+            <span class="legend-section-title">Rescue Robots</span>
+            <div class="legend-item"><span class="legend-dot robot-1"></span>NR-1 (Cyan)</div>
+            <div class="legend-item"><span class="legend-dot robot-2"></span>NR-2 (Green)</div>
+            <div class="legend-item"><span class="legend-dot robot-3"></span>NR-3 (Yellow)</div>
+          </div>
+          <div class="legend-section">
+            <span class="legend-section-title">Survivors</span>
+            <div class="legend-item"><span class="legend-dot safe"></span>Safe Zone</div>
+            <div class="legend-item"><span class="legend-dot risk"></span>Risk Zone</div>
+            <div class="legend-item"><span class="legend-dot critical"></span>Critical Zone</div>
+            <div class="legend-item"><span class="legend-line route"></span>Active Route</div>
+          </div>
+          <div class="legend-section">
+            <span class="legend-section-title">Ground Cracks</span>
+            <div class="legend-item"><span class="legend-dot crack-safe"></span>Safe &lt;0.5m</div>
+            <div class="legend-item"><span class="legend-dot crack-caution"></span>Caution 0.5–1.5m</div>
+            <div class="legend-item"><span class="legend-dot crack-danger"></span>Danger &gt;1.5m ⛔</div>
+          </div>
+          <div class="legend-section">
+            <span class="legend-section-title">Vehicle Debris ⛔</span>
+            <div class="legend-item"><span class="legend-tag">CAR</span>Broken car</div>
+            <div class="legend-item"><span class="legend-tag">TIR</span>Tire</div>
+            <div class="legend-item"><span class="legend-tag">MTL</span>Metal scrap</div>
+            <div class="legend-item"><span class="legend-tag">BIK</span>Bike debris</div>
+          </div>
+          <div class="legend-section">
+            <span class="legend-section-title">Building Debris ⛔</span>
+            <div class="legend-item"><span class="legend-tag">SLB</span>Concrete slab</div>
+            <div class="legend-item"><span class="legend-tag">BRK</span>Bricks</div>
+            <div class="legend-item"><span class="legend-tag">ROD</span>Steel rod</div>
+            <div class="legend-item"><span class="legend-tag">GLS</span>Broken glass</div>
+            <div class="legend-item"><span class="legend-tag">WAL</span>Collapsed wall</div>
+          </div>
+        </div>
+        <div class="map-overlay-info" id="mapInfo">
+          <span id="robotStatus">Robot: Scanning sector A-7</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel 2: Robot & Rescue Stats -->
+    <section class="panel panel-stats glass">
+      <div class="panel-header">
+        <h2>Robot &amp; Rescue Stats</h2>
+        <span class="panel-badge">LIVE TELEMETRY</span>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-group">
+          <h3 class="stat-group-title">Robot Systems</h3>
+          <div class="stat-card" data-stat="battery">
+            <div class="stat-icon battery-icon"></div>
+            <div class="stat-content">
+              <span class="stat-label">Battery</span>
+              <span class="stat-value" id="statBattery">87%</span>
+              <div class="stat-bar"><div class="stat-bar-fill battery-fill" id="barBattery"></div></div>
+            </div>
+          </div>
+          <div class="stat-card" data-stat="speed">
+            <div class="stat-icon speed-icon"></div>
+            <div class="stat-content">
+              <span class="stat-label">Speed</span>
+              <span class="stat-value" id="statSpeed">1.4 m/s</span>
+            </div>
+          </div>
+          <div class="stat-card" data-stat="temperature">
+            <div class="stat-icon temp-icon"></div>
+            <div class="stat-content">
+              <span class="stat-label">Temperature</span>
+              <span class="stat-value" id="statTemp">42°C</span>
+            </div>
+          </div>
+          <div class="stat-card" data-stat="cpu">
+            <div class="stat-icon cpu-icon"></div>
+            <div class="stat-content">
+              <span class="stat-label">CPU Load</span>
+              <span class="stat-value" id="statCpu">34%</span>
+              <div class="stat-bar"><div class="stat-bar-fill cpu-fill" id="barCpu"></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="stat-group">
+          <h3 class="stat-group-title">Mission Progress</h3>
+          <div class="stat-card compact" data-stat="survivors">
+            <span class="stat-label">Survivors Detected</span>
+            <span class="stat-value large" id="statSurvivors">18</span>
+          </div>
+          <div class="stat-card compact" data-stat="saved">
+            <span class="stat-label">People Saved</span>
+            <span class="stat-value large accent-green" id="statSaved">3</span>
+          </div>
+          <div class="stat-card compact" data-stat="safeZone">
+            <span class="stat-label">In Safe Zone</span>
+            <span class="stat-value" id="statSafeZone">4</span>
+          </div>
+          <div class="stat-card compact" data-stat="riskZone">
+            <span class="stat-label">In Risk Zone</span>
+            <span class="stat-value accent-yellow" id="statRiskZone">3</span>
+          </div>
+          <div class="stat-card compact" data-stat="criticalZone">
+            <span class="stat-label">In Critical Zone</span>
+            <span class="stat-value accent-red" id="statCriticalZone">2</span>
+          </div>
+          <div class="stat-card compact" data-stat="obstacles">
+            <span class="stat-label">Obstacles Avoided</span>
+            <span class="stat-value" id="statObstacles">0</span>
+          </div>
+          <div class="stat-card efficiency" data-stat="efficiency">
+            <span class="stat-label">Rescue Efficiency</span>
+            <div class="efficiency-ring">
+              <svg viewBox="0 0 80 80">
+                <circle class="ring-bg" cx="40" cy="40" r="34"/>
+                <circle class="ring-fill" id="efficiencyRing" cx="40" cy="40" r="34"/>
+              </svg>
+              <span class="efficiency-value" id="statEfficiency">76%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Panel 3: Sensor Feed -->
+    <section class="panel panel-sensors glass">
+      <div class="panel-header">
+        <h2>Sensor Feed</h2>
+        <span class="panel-badge">REAL-TIME</span>
+      </div>
+      <div class="sensor-list" id="sensorList">
+        <!-- Populated by JS -->
+      </div>
+    </section>
+
+    <!-- Panel 4: Neuromorphic Decision Panel -->
+    <section class="panel panel-neural glass">
+      <div class="panel-header">
+        <h2>Neuromorphic Decision Panel</h2>
+        <span class="panel-badge accent-purple">AI CORE</span>
+      </div>
+      <div class="neural-container">
+        <canvas id="neuralCanvas"></canvas>
+        <div class="decision-log" id="decisionLog">
+          <!-- Populated by JS -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span>ReflexSave Project — NeuroRescue Neuromorphic Disaster Response</span>
+    <span>Simulation Mode · No Backend Required</span>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
